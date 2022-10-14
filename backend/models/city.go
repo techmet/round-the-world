@@ -31,11 +31,12 @@ type ContinentCityMap map[string][]*City
 type NeighbouringContinentCityMap map[string][]*NeighbouringCity
 
 type NeighbouringCity struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name"`
-	CountryName string  `json:"countryName"`
-	Distance    float64 `json:"distance"`
-	Continent   string  `json:"continent"`
+	ID          string          `json:"id"`
+	Name        string          `json:"name"`
+	CountryName string          `json:"countryName"`
+	ContID      string          `json:"contId"`
+	Distance    float64         `json:"distance"`
+	Location    LocationDetails `json:"location"`
 }
 
 type TripDetails struct {

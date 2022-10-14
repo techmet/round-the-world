@@ -130,9 +130,9 @@ func GetRoundTrip(cityId string) models.TripDetails {
 	otherContinents := getOtherContinents(currentCity.ContID, continents)
 
 	path := []string{
-		getPathText(*currentCity),
+		getPathTextFromCity(*currentCity),
 	}
-	return getShortestPath(*currentCity, *currentCity, otherContinents, models.TripDetails{
+	return getShortestPath(*currentCity, currentCity.ID, otherContinents, models.TripDetails{
 		ID:            currentCity.ID,
 		Path:          path,
 		TotalDistance: 0,
@@ -144,22 +144,33 @@ func GetRoundTrip(cityId string) models.TripDetails {
 
 }
 
-func getShortestPath(originalCity models.City, currentCity models.City, remainContinents []string, tripDetails models.TripDetails) models.TripDetails {
+func getShortestPath(originalCity models.City, currentCityID string, remainContinents []string, tripDetails models.TripDetails) models.TripDetails {
+	cityMap := GetCities()
+	currentCity := *cityMap[currentCityID]
+
 	if len(remainContinents) == 0 {
 		tripDetails.Path = append(tripDetails.Path, originalCity.ID+" (Back to "+formatName(originalCity.Name)+")")
 		tripDetails.TotalDistance = tripDetails.TotalDistance + utils.GetDistanceFromLatLonInKm(currentCity, originalCity)
 		return tripDetails
 	}
-	continentMap := GetContinentCityMap()
 
-	nextContinent := remainContinents[0]
-	nextCity := continentMap[nextContinent][0]
+	continentMap := currentCity.NeighbouringCities
+
+	var nextCity *models.NeighbouringCity
+
+	for _, remainContinent := range remainContinents {
+		if nextCity == nil || nextCity.Distance > continentMap[remainContinent][0].Distance {
+			nextCity = (continentMap[remainContinent])[0]
+		}
+	}
+
+	nextContinent := nextCity.ContID
 	tripDetails.Path = append(tripDetails.Path, getPathText(*nextCity))
 	tripDetails.Coordinates = append(tripDetails.Coordinates, models.LocationDetails{
 		Lat: nextCity.Location.Lat,
 		Lon: nextCity.Location.Lon,
 	})
-	tripDetails.TotalDistance = tripDetails.TotalDistance + utils.GetDistanceFromLatLonInKm(currentCity, *nextCity)
+	tripDetails.TotalDistance = tripDetails.TotalDistance + nextCity.Distance
 
 	updatedContinents := make([]string, 0, len(remainContinents)-1)
 
@@ -168,7 +179,7 @@ func getShortestPath(originalCity models.City, currentCity models.City, remainCo
 			updatedContinents = append(updatedContinents, continent)
 		}
 	}
-	return getShortestPath(originalCity, *nextCity, updatedContinents, tripDetails)
+	return getShortestPath(originalCity, nextCity.ID, updatedContinents, tripDetails)
 }
 
 func getOtherContinents(currentContinent string, continents []string) []string {
@@ -191,8 +202,9 @@ func createNeighbours(city models.City, otherContinents []string) models.Neighbo
 				ID:          nextCity.ID,
 				Name:        nextCity.Name,
 				CountryName: nextCity.CountryName,
-				Continent:   nextCity.ContID,
+				ContID:      nextCity.ContID,
 				Distance:    distance,
+				Location:    nextCity.Location,
 			})
 		}
 		sort.Slice(neighbouringCities, func(i, j int) bool {
@@ -203,7 +215,11 @@ func createNeighbours(city models.City, otherContinents []string) models.Neighbo
 	return otherContinentCityMap
 }
 
-func getPathText(city models.City) string {
+func getPathText(city models.NeighbouringCity) string {
+	return city.ID + " (" + formatName(city.Name) + ", " + formatName(city.ContID) + ")"
+}
+
+func getPathTextFromCity(city models.City) string {
 	return city.ID + " (" + formatName(city.Name) + ", " + formatName(city.ContID) + ")"
 }
 
