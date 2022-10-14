@@ -5,7 +5,6 @@
 * Install latest versions of [Node](https://nodejs.org/en/download/), [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable), and [Go](https://go.dev/doc/install).
 * Run `make prepare-frontend` command.
 * Run `make prepare-backend` command.
-* Run `make run-backend` command.
 * Run `make run-frontend` command.
 * Run `make run-backend` command.
 
