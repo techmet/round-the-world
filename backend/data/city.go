@@ -146,7 +146,7 @@ func GetRoundTrip(cityId string) models.TripDetails {
 
 func getShortestPath(originalCity models.City, currentCity models.City, remainContinents []string, tripDetails models.TripDetails) models.TripDetails {
 	if len(remainContinents) == 0 {
-		tripDetails.Path = append(tripDetails.Path, originalCity.ID+" (Back to "+formatName(originalCity.Name)+" )")
+		tripDetails.Path = append(tripDetails.Path, originalCity.ID+" (Back to "+formatName(originalCity.Name)+")")
 		tripDetails.TotalDistance = tripDetails.TotalDistance + utils.GetDistanceFromLatLonInKm(currentCity, originalCity)
 		return tripDetails
 	}
