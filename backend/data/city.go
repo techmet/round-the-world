@@ -10,10 +10,13 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"regexp"
 	"sort"
 
 	"github.com/techmet/round-the-world/models"
 	"github.com/techmet/round-the-world/utils"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const citiesURL = "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/4be05480-e7fc-4b41-b642-fb26dcaa4c39/cities.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221013%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221013T164617Z&X-Amz-Expires=86400&X-Amz-Signature=7c5ec6581ef355024f42a3cd1df3dfe1509e1af0be78d7948b24a67f5b87bf37&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22cities.json%22&x-id=GetObject"
@@ -126,9 +129,12 @@ func GetRoundTrip(cityId string) models.TripDetails {
 	continents := GetContinents(continentMap)
 	otherContinents := getOtherContinents(currentCity.ContID, continents)
 
+	path := []string{
+		getPathText(*currentCity),
+	}
 	return getShortestPath(*currentCity, *currentCity, otherContinents, models.TripDetails{
 		ID:            currentCity.ID,
-		Path:          make([]string, 0),
+		Path:          path,
 		TotalDistance: 0,
 		Coordinates: []models.LocationDetails{{
 			Lat: currentCity.Location.Lat,
@@ -140,7 +146,7 @@ func GetRoundTrip(cityId string) models.TripDetails {
 
 func getShortestPath(originalCity models.City, currentCity models.City, remainContinents []string, tripDetails models.TripDetails) models.TripDetails {
 	if len(remainContinents) == 0 {
-		tripDetails.Path = append(tripDetails.Path, originalCity.Name+"("+originalCity.CountryName+")")
+		tripDetails.Path = append(tripDetails.Path, originalCity.ID+" (Back to "+formatName(originalCity.Name)+" )")
 		tripDetails.TotalDistance = tripDetails.TotalDistance + utils.GetDistanceFromLatLonInKm(currentCity, originalCity)
 		return tripDetails
 	}
@@ -148,7 +154,7 @@ func getShortestPath(originalCity models.City, currentCity models.City, remainCo
 
 	nextContinent := remainContinents[0]
 	nextCity := continentMap[nextContinent][0]
-	tripDetails.Path = append(tripDetails.Path, nextCity.Name+"("+nextCity.CountryName+")")
+	tripDetails.Path = append(tripDetails.Path, getPathText(*nextCity))
 	tripDetails.Coordinates = append(tripDetails.Coordinates, models.LocationDetails{
 		Lat: nextCity.Location.Lat,
 		Lon: nextCity.Location.Lon,
@@ -185,8 +191,8 @@ func createNeighbours(city models.City, otherContinents []string) models.Neighbo
 				ID:          city.ID,
 				Name:        city.Name,
 				CountryName: city.CountryName,
+				Continent:   city.ContID,
 				Distance:    distance,
-				Continent:   continent,
 			})
 		}
 		sort.Slice(neighbouringCities, func(i, j int) bool {
@@ -195,4 +201,16 @@ func createNeighbours(city models.City, otherContinents []string) models.Neighbo
 		otherContinentCityMap[continent] = neighbouringCities
 	}
 	return otherContinentCityMap
+}
+
+func getPathText(city models.City) string {
+	return city.ID + " (" + formatName(city.Name) + ", " + formatName(city.ContID) + ")"
+}
+
+func formatName(name string) string {
+	re, err := regexp.Compile(`[^\w]`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return cases.Title(language.English).String(re.ReplaceAllString(name, " "))
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Navbar } from "./components/navbar";
-import { Path } from "./components/path";
+import { TripDetails } from "./components/tripDetails";
 import { Searchbar } from "./components/searchbar";
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
     <div>
       <Navbar />
       <Searchbar onResultSelected={onResultSelected} />
-      <Path selectedCity ={selectedCity}/>
+      <TripDetails selectedCity ={selectedCity}/>
     </div>
   );
 }
