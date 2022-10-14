@@ -1,0 +1,68 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+nav {
+  width: 100%;
+  height: 70px;
+  display: flex;
+  padding: 20px 36px;
+  box-shadow: 0px 2.98256px 7.4564px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-text {
+  color: #7bc5dd;
+  margin-left: 5px;
+  margin-bottom: 2px;
+  font-weight: 600;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.search-bar {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-bar input {
+  width: 40vw;
+}
+.trip-details{
+  width: 40vw;
+  margin: 0 auto;
+  margin-top: 30px;
+  border: 1px solid rgb(32, 162, 153);
+  padding: 10px;
+  border-radius: 10px;
+}
+.trip-details-header{
+  font-weight: 700;
+  line-height: 30px;
+  font-size: 25px;
+}
+.trip-details-content{
+  font-weight: 500;
+  line-height: 30px;
+  font-size: 20px;
+}
+
+@media screen and (max-width: 700px) {
+  .search-bar input {
+    width: 90vw;
+  }
+  .trip-details{
+    width: 90vw;
+  }
+}
