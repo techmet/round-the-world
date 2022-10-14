@@ -51,6 +51,9 @@ nav {
   font-weight: 700;
   line-height: 30px;
   font-size: 25px;
+  text-align: center;
+  text-decoration: underline;
+  margin-bottom: 10px;
 }
 .trip-details-content{
   font-weight: 500;

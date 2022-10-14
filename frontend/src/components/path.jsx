@@ -10,7 +10,7 @@ export const Path = ({ selectedCity }) => {
         const tripDetails = await axios.get(
           `http://localhost:5001/cities/trip/${selectedCity}`
         );
-        tripDetails.data.path.unshift(tripDetails.data.path.at(-1))
+        tripDetails.data.path.unshift(tripDetails.data.path.at(-1));
         setTripDetails(tripDetails.data);
       })();
     }
@@ -21,10 +21,10 @@ export const Path = ({ selectedCity }) => {
       <div class="trip-details">
         <div class="trip-details-header">Trip Details</div>
         <div class="trip-details-content">
-          <b>Total Distance</b>: {Math.round(tripDetails.totalDistance)} 
+          <b>Trip:</b> {tripDetails.path.join(" ➙ ")}
         </div>
         <div class="trip-details-content">
-       <b>Trip:</b> {tripDetails.path.join("/ ")}
+          <b>Distance Travelled</b>: {Math.round(tripDetails.totalDistance)} Kms
         </div>
       </div>
     );
