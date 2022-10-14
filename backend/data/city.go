@@ -188,10 +188,10 @@ func createNeighbours(city models.City, otherContinents []string) models.Neighbo
 		for _, nextCity := range continentCitiesMap[continent] {
 			distance := utils.GetDistanceFromLatLonInKm(city, *nextCity)
 			neighbouringCities = append(neighbouringCities, &models.NeighbouringCity{
-				ID:          city.ID,
-				Name:        city.Name,
-				CountryName: city.CountryName,
-				Continent:   city.ContID,
+				ID:          nextCity.ID,
+				Name:        nextCity.Name,
+				CountryName: nextCity.CountryName,
+				Continent:   nextCity.ContID,
 				Distance:    distance,
 			})
 		}
