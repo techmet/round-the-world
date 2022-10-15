@@ -16,7 +16,7 @@ func main() {
 
 	data.PopulateNeighboursForEachCity()
 
-	log.Println("Succesfull populated the Initial data")
+	log.Println("Succesfully populated the Initial data..")
 
 	app.Use(cors.New(cors.Config{}))
 

@@ -25,7 +25,7 @@ var cityMap models.CityMap = models.CityMap{}
 var continentCitiesMap models.ContinentCityMap = models.ContinentCityMap{}
 var totalContinents []string = []string{}
 
-func GetCities() models.CityMap {
+func GetCitiesFromURL() models.CityMap {
 	if len(cityMap) == 0 {
 		req, err := http.NewRequest(http.MethodGet, citiesURL, nil)
 		if err != nil {
@@ -64,6 +64,22 @@ func GetCities() models.CityMap {
 
 		var result models.CityMap
 		json.Unmarshal([]byte(byteValue), &result)
+		cityMap = result
+		return result
+	} else {
+		return cityMap
+	}
+}
+
+func GetCities() models.CityMap {
+	if len(cityMap) == 0 {
+		byteValue, err := os.ReadFile("data/cities.json")
+		if err != nil {
+			fmt.Print("Error in reading file: ", err)
+			os.Exit(1)
+		}
+		var result models.CityMap
+		json.Unmarshal(byteValue, &result)
 		cityMap = result
 		return result
 	} else {
